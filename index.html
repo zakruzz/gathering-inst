@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gathering of Alumni</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poetsen+One&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <style>
+        /* Custom Animations for Tailwind */
+        @keyframes float {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+        100% { transform: translateY(0); }
+    }
+    @keyframes flip {
+        0% { transform: rotateX(0deg); }
+        50% { transform: rotateX(90deg); }
+        100% { transform: rotateX(0deg); }
+    }
+    @keyframes drift {
+        0% { transform: translate(0, 0); opacity: 0.6; }
+        50% { opacity: 0.2; }
+        100% { transform: translate(80px, 80px); opacity: 0; }
+    }
+    .animate-float {
+        animation: float 20s infinite linear;
+    }
+    .animate-flip {
+        animation: flip 0.5s ease;
+    }
+    .animate-drift {
+        animation: drift 10s infinite;
+    }
+    /* Wax seal style */
+    .wax-seal {
+        position: absolute;
+        bottom: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 50px;
+        background: radial-gradient(circle, #b22222, #8b0000);
+        border-radius: 50%;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #ffd700;
+        font-size: 24px;
+        font-weight: bold;
+        z-index: 1002;
+    }
+    /* Stamp style */
+    .stamp {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 60px;
+        height: 40px;
+        background: #f0e68c;
+        border: 2px dashed #d2691e;
+        transform: rotate(5deg);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 10px;
+        color: #d2691e;
+        z-index: 1002;
+    }
+    /* Card text style */
+    .card-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'Great Vibes', cursive;
+        font-size: 2rem;
+        color: #b8865e;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        z-index: 1002;
+    }
+    h1, h2, h5 {
+        font-family: 'Poetsen One', sans-serif;
+        color: #d4a373;
+        visibility: visible;
+    }
+    @media (max-width: 640px) {
+        .card-text {
+            font-size: 1.25rem;
+        }
+        .wax-seal {
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            bottom: -20px;
+        }
+        .stamp {
+            width: 50px;
+            height: 35px;
+            font-size: 8px;
+        }
+    }
+        /* Envelope text style */
+        .envelope-text {
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.5rem;
+            color: #b8865e;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            z-index: 1002;
+        }
+        h1, h2, h5 {
+            font-family: 'Poetsen One', sans-serif;
+            color: #d4a373;
+            visibility: visible;
+        }
+        @media (max-width: 640px) {
+            .envelope-text {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="font-poppins bg-[#f8f1eb] text-gray-800">
+<div id="card" class="fixed inset-0 bg-[#d4a373] flex justify-center items-center z-[1000]">
+    <div class="w-11/12 max-w-[500px] h-[70%] bg-white border-2 border-[#b8865e] relative shadow-2xl bg-[url('https://www.transparenttextures.com/patterns/paper.png')] bg-opacity-50">
+        <div id="card-front" class="absolute inset-0 bg-white border-2 border-[#b8865e] z-[1001] bg-[url('https://www.transparenttextures.com/patterns/paper.png')] bg-opacity-50">
+            <div class="wax-seal">✦</div>
+            <div class="stamp">POSTAGE</div>
+            <div class="card-text">Gathering of Alumni</div>
+        </div>
+        <div id="card-back" class="absolute inset-0 bg-white border-2 border-[#b8865e] z-[1000] bg-[url('https://www.transparenttextures.com/patterns/paper.png')] bg-opacity-50"></div>
+    </div>
+</div>
+    <div id="particles" class="fixed inset-0 pointer-events-none z-[900]"></div>
+    <div id="container" class="max-w-[1200px] mx-auto p-5 text-center relative z-[1001] opacity-0 invisible">
+        <div class="header bg-[linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)),url('1_undangan.jpg')] bg-cover bg-center p-[120px_20px] text-white rounded-xl relative z-[1] visible">
+            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/subtle-white-feathers.png')] opacity-20 animate-float z-0"></div>
+            <h2 class="font-[Great_Vibes] text-5xl md:text-6xl relative z-[2] visible">Departemen Instrumentasi ITS <br>Mengundang Anda</h2>
+            <p class="text-xl md:text-2xl mt-3 relative z-[2] visible">Pada Tanggal</p>
+            <p class="text-xl md:text-2xl mt-3 relative z-[2] visible">Sabtu, 31 Mei 2025</p>
+        </div>
+        <div class="content p-[60px_20px] bg-white rounded-xl -mt-[50px] shadow-xl relative z-[1] visible">
+            <h2 class="font-[Great_Vibes] text-5xl md:text-6xl text-[#d4a373] visible">Untuk Alumni,</h2>
+            <p class="text-lg md:text-xl leading-relaxed text-gray-600 mt-4 visible">Kembali, Bersatu, Berkontribusi dan Bersinergi Menuju Instrumentasi yang Unggul</p>
+            <div class="event-photo my-8 visible">
+                <img id="eventPhoto" src="2_undangan.jpg" alt="Last Year’s Event Photo" class="max-w-full h-auto max-h-[400px] border-2 border-[#  mx-auto border-[#d4a373] rounded-lg shadow-xl hover:scale-105 transition-transform">
+            </div>
+            <div id="countdown" class="my-8 flex justify-center gap-5 visible">
+                <div class="bg-[#d4a373] text-white p-5 rounded-lg min-w-[80px] text-center shadow-lg">
+                    <span id="days" class="block text-3xl font-semibold">0</span>
+                    <p class="mt-1 text-base">Hari</p>
+                </div>
+                <div class="bg-[#d4a373] text-white p-5 rounded-lg min-w-[80px] text-center shadow-lg">
+                    <span id="hours" class="block text-3xl font-semibold">0</span>
+                    <p class="mt-1 text-base">Jam</p>
+                </div>
+                <div class="bg-[#d4a373] text-white p-5 rounded-lg min-w-[80px] text-center shadow-lg">
+                    <span id="minutes" class="block text-3xl font-semibold">0</span>
+                    <p class="mt-1 text-base">Menit</p>
+                </div>
+                <div class="bg-[#d4a373] text-white p-5 rounded-lg min-w-[80px] text-center shadow-lg">
+                    <span id="seconds" class="block text-3xl font-semibold">0</span>
+                    <p class="mt-1 text-base">Detik</p>
+                </div>
+            </div>
+            <div class="details flex justify-center flex-wrap gap-5 my-10">
+                <div class="bg-[#f8f1eb] p-5 rounded-lg w-[220px] shadow-lg hover:-translate-y-2 hover:shadow-xl transition-all visible">
+                    <h3 class="text-xl font-semibold">Tanggal</h3>
+                    <p class="text-lg text-gray-600">Sabtu, 31 Mei 2025</p>
+                </div>
+                <div class="bg-[#f8f1eb] p-5 rounded-lg w-[220px] shadow-lg hover:-translate-y-2 hover:shadow-xl transition-all visible">
+                    <h3 class="text-xl font-semibold">Waktu</h3>
+                    <p class="text-lg text-gray-600">10:00 - 14:00</p>
+                </div>
+                <div class="bg-[#f8f1eb] p-5 rounded-lg w-[220px] shadow-lg hover:-translate-y-2 hover:shadow-xl transition-all visible">
+                    <h3 class="text-xl font-semibold">Lokasi</h3>
+                    <p class="text-lg text-gray-600">Depot Bu Rudi, Surabaya, Lt. 3</p>
+                </div>
+            </div>
+            <div class="event-photo my-8 visible">
+                <iframe class="max-w-full border-2 border-[#  mx-auto border-[#d4a373] rounded-lg shadow-xl hover:scale-105 transition-transform" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126648.53133220911!2d112.61765969726562!3d-7.267380199999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd7f9fdfa4dc9cd%3A0x73513935dae2989e!2sDepot%20Bu%20Rudy%20-%20Dharmahusada!5e0!3m2!1sid!2sid!4v1747396273979!5m2!1sid!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+            <div class="rsvp my-12 visible">
+                <div class="flex flex-wrap justify-center gap-8">
+                    <div class="text-center">
+                        <p class="mt-3 text-lg md:text-xl text-gray-600">Scan untuk RSVP:</p>
+                        <a href="https://its.id/m/RSVP_GatheringOfAlumniTEKINS">
+                            <img alt="QR Code for RSVP" src="RSVP_undangan.jpg" class="max-w-[200px] h-auto block mx-auto border-2 border-[#d4a373] rounded-lg hover:scale-105 transition-transform">
+                        </a>
+                    </div>
+                    <div class="text-center">
+                        <p class="mt-3 text-lg md:text-xl text-gray-600">Scan untuk kontribusi:</p>
+                        <a href="https://its.id/m/Kontribusi_GoA">
+                            <img alt="QR Code for Contribution" src="kontribusi_undangan.png" class="max-w-[200px] h-auto block mx-auto border-2 border-[#d4a373] rounded-lg hover:scale-105 transition-transform">
+                        </a>
+                    </div>
+                </div>
+                <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Alumni+Gathering+2025&dates=20250531T030000Z/20250531T070000Z&details=Reuniting+Memories,+Rekindling+Bonds.+Join+us+for+a+day+of+reconnection+and+celebration!+Details:+[invitation_url]&location=Depot+Bu+Rudi,+Surabaya,+3rd+Floor&sf=true&output=xml" target="_blank" class="inline-block mt-5 px-5 py-2 bg-[#d4a373] text-white rounded-md text-lg hover:scale-105 transition-transform">Add to Google Calendar</a>
+            </div>
+        </div>
+        <div class="footer p-8 bg-[#d4a373] text-white rounded-xl mt-5 visible">
+            <p class="text-lg">Kami Mengharapkan Kehadirannya Cak/Ning Sekalian</p>
+            <p class="text-lg mt-2">Contact Person :</p> <br> 
+            <p class="text-lg">
+                <a href="https://wa.me/6285735339398">085735339398 - Ir. Safira Firdaus Mujiyanti, S.T., M.T.</a> 
+                <br> 
+                <a href="https://wa.me/6281217184445">081217184445 - Devindo</a> 
+            </p> 
+            <br>
+            <p class="text-lg mt-2"><a href="mailto:admin.tins@its.ac.id">admin.tins@its.ac.id</a> </p> 
+        </div>
+    </div>
+    <script>
+        console.log("Script loaded, initializing envelope, countdown, and GSAP animations");
+
+            function openInvitation() {
+        console.log("Opening invitation...");
+        try {
+            gsap.to("#card-front", { rotateY: 180, duration: 1, ease: "power2.out", transformOrigin: "left" });
+            gsap.to("#card", { opacity: 0, duration: 1, delay: 0.5, onComplete: () => {
+                document.getElementById("card").style.display = "none";
+                document.getElementById("container").classList.remove("opacity-0", "invisible");
+                document.getElementById("container").classList.add("opacity-100", "visible");
+                console.log("Card hidden, container should be visible");
+            }});
+            gsap.to("#container", { 
+                opacity: 1, 
+                duration: 1, 
+                delay: 0.7, 
+                onComplete: () => console.log("Container revealed")
+            });
+            gsap.from(".header h1", { opacity: 0, y: 50, duration: 1, delay: 1.2 });
+            gsap.from(".header p", { opacity: 0, y: 30, duration: 1, delay: 1.4, stagger: 0.2 });
+            gsap.from(".content h2", { opacity: 0, scale: 0.8, duration: 1, delay: 1.6 });
+            gsap.from(".content p", { opacity: 0, y: 20, duration: 1, delay: 1.8 });
+            gsap.from(".event-photo", { opacity: 0, y: 30, duration: 1, delay: 2 });
+            gsap.from(".countdown", { opacity: 0, y: 30, duration: 1, delay: 2.2 });
+            gsap.from(".detail-card", { opacity: 0, y: 50, duration: 1, delay: 2.4, stagger: 0.2 });
+            gsap.from(".location-photo", { opacity: 0, y: 30, duration: 1, delay: 2.8 });
+            gsap.from(".rsvp", { opacity: 0, scale: 0.9, duration: 1, delay: 3 });
+            gsap.from(".footer", { opacity: 0, y: 30, duration: 1, delay: 3.2 });
+        } catch (error) {
+            console.error("Animation error:", error);
+            document.getElementById("card").style.display = "none";
+            const container = document.getElementById("container");
+            container.classList.remove("opacity-0", "invisible");
+            container.classList.add("opacity-100", "visible");
+            document.body.style.overflow = "auto";
+        }
+    }
+        setTimeout(() => {
+            console.log("Auto-opening invitation");
+            openInvitation();
+        }, 1500);
+
+        function startCountdown() {
+            console.log("Starting countdown...");
+            try {
+                const eventDate = new Date("May 31, 2025 10:00:00 GMT+0700").getTime();
+                const countdownInterval = setInterval(() => {
+                    const now = new Date().getTime();
+                    const distance = eventDate - now;
+
+                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    const daysElement = document.getElementById("days");
+                    const hoursElement = document.getElementById("hours");
+                    const minutesElement = document.getElementById("minutes");
+                    const secondsElement = document.getElementById("seconds");
+
+                    if (daysElement.innerText != days) {
+                        daysElement.innerText = days;
+                        daysElement.classList.add("animate-flip");
+                        setTimeout(() => daysElement.classList.remove("animate-flip"), 500);
+                    }
+                    if (hoursElement.innerText != hours) {
+                        hoursElement.innerText = hours;
+                        hoursElement.classList.add("animate-flip");
+                        setTimeout(() => hoursElement.classList.remove("animate-flip"), 500);
+                    }
+                    if (minutesElement.innerText != minutes) {
+                        minutesElement.innerText = minutes;
+                        minutesElement.classList.add("animate-flip");
+                        setTimeout(() => minutesElement.classList.remove("animate-flip"), 500);
+                    }
+                    if (secondsElement.innerText != seconds) {
+                        secondsElement.innerText = seconds;
+                        secondsElement.classList.add("animate-flip");
+                        setTimeout(() => secondsElement.classList.remove("animate-flip"), 500);
+                    }
+
+                    if (distance < 0) {
+                        clearInterval(countdownInterval);
+                        document.getElementById("countdown").innerHTML = "<p class='text-lg text-gray-600'>The event has started!</p>";
+                        console.log("Countdown ended");
+                    }
+                }, 1000);
+            } catch (error) {
+                console.error("Countdown error:", error);
+                document.getElementById("countdown").innerHTML = "<p class='text-lg text-gray-600'>Countdown unavailable</p>";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(startCountdown, 2000);
+
+            window.addEventListener("scroll", () => {
+                const container = document.getElementById("container");
+                if (container.classList.contains("opacity-0") || container.classList.contains("invisible")) {
+                    container.classList.remove("opacity-0", "invisible");
+                    container.classList.add("opacity-100", "visible");
+                    console.log("Scroll detected, forcing container visibility");
+                }
+            });
+        });
+
+        try {
+            const particleContainer = document.getElementById('particles');
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'absolute w-2 h-2 bg-[#d4a373]/40 rounded-full animate-drift';
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                particleContainer.appendChild(particle);
+            }
+            console.log("Particles initialized");
+        } catch (error) {
+            console.error("Particle animation error:", error);
+        }
+    </script>
+</body>
+</html>
