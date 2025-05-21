@@ -294,85 +294,51 @@
     <script>
 console.log("Script loaded, initializing envelope, countdown, and GSAP animations");
 
-        // Fungsi untuk mendapatkan parameter URL
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
+// Fungsi untuk mendapatkan parameter URL
+function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+}
+
+// Konfigurasi dinamis dari URL
+const API_KEY = 'AIzaSyC0ovjcZs2zSR4B2soLqPLHt2vx6EMhuLY';
+let SPREADSHEET_ID = getQueryParam('spreadsheet_id') || '1WZEIOfyc_UcZi1pIi2YESYtksBf5o1BL-SSvarIUCoI'; // Default
+let SHEET_NAME = getQueryParam('sheet_name') || '2020'; // Default
+const NAME_PARAM = getQueryParam('name') || 'Alumni'; // Nama dari URL, default 'Alumni'
+
+// Fungsi untuk mengambil data dari Google Spreadsheet
+async function fetchDataFromSheet() {
+    try {
+        const encodedSheetName = encodeURIComponent(SHEET_NAME);
+        const response = await fetch(
+            `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodedSheetName}!A:Z?key=${API_KEY}`
+        );
+        const data = await response.json();
+        if (data.values && data.values.length > 0) {
+            return data.values;
+        } else {
+            console.error('Tidak ada data di spreadsheet');
+            return [];
         }
+    } catch (error) {
+        console.error('Error mengambil data dari spreadsheet:', error);
+        return [];
+    }
+}
 
-        // Konfigurasi dinamis dari URL
-        const API_KEY = 'AIzaSyC0ovjcZs2zSR4B2soLqPLHt2vx6EMhuLY';
-        let SPREADSHEET_ID = getQueryParam('spreadsheet_id') || '1WZEIOfyc_UcZi1pIi2YESYtksBf5o1BL-SSvarIUCoI'; // Default
-        let SHEET_NAME = getQueryParam('sheet_name') || '2020'; // Default
-        const NAME_PARAM = getQueryParam('name') || ''; // Nama dari URL
-        const NAME_COLUMN_PARAM = getQueryParam('name_column') || 'Nama'; // Kolom nama kustom
+// Fungsi untuk mengambil nama langsung dari parameter
+function getNameFromParam() {
+    return NAME_PARAM; // Menggunakan nama dari URL langsung
+}
 
-        // Fungsi untuk mengambil data dari Google Spreadsheet
-        async function fetchDataFromSheet() {
-            try {
-                const encodedSheetName = encodeURIComponent(SHEET_NAME);
-                const response = await fetch(
-                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodedSheetName}!A:Z?key=${API_KEY}`
-                );
-                const data = await response.json();
-                if (data.values && data.values.length > 0) {
-                    return data.values;
-                } else {
-                    console.error('Tidak ada data di spreadsheet');
-                    return [];
-                }
-            } catch (error) {
-                console.error('Error mengambil data dari spreadsheet:', error);
-                return [];
-            }
-        }
-
-        // Fungsi untuk mendeteksi nama secara dinamis
-        async function detectName(data) {
-            if (!data || data.length === 0) return 'Alumni';
-            const headers = data[0].map(header => header ? header.toLowerCase() : '');
-            console.log('Headers detected:', headers);
-
-            // Tentukan indeks kolom berdasarkan parameter atau deteksi dinamis
-            let nameIndex = headers.indexOf(NAME_COLUMN_PARAM.toLowerCase());
-
-            // Jika tidak ditemukan, coba kata kunci alternatif
-            if (nameIndex === -1) {
-                const nameKeywords = ['nama', 'full name', 'name', 'alumni name'];
-                for (let keyword of nameKeywords) {
-                    nameIndex = headers.indexOf(keyword);
-                    if (nameIndex !== -1) break;
-                }
-            }
-
-            // Fallback ke kolom pertama jika tidak ditemukan
-            if (nameIndex === -1) nameIndex = 0;
-
-            // Cari nama dari parameter URL
-            let matchedName = 'Alumni'; // Default
-            if (NAME_PARAM) {
-                for (let i = 1; i < data.length; i++) {
-                    const row = data[i];
-                    if (row[nameIndex] && row[nameIndex].toLowerCase().includes(NAME_PARAM.toLowerCase())) {
-                        matchedName = row[nameIndex];
-                        break;
-                    }
-                }
-            }
-
-            return matchedName;
-        }
-
-        // Fungsi untuk memperbarui teks dengan nama
-        async function updateInvitationText() {
-            const data = await fetchDataFromSheet();
-            const name = await detectName(data);
-            const contentTitle = document.getElementById('content-title');
-            contentTitle.innerText = `Untuk ${name},`;
-            console.log(`Updated invitation text to: Untuk ${name},`);
-        }
-
-    function openInvitation() {
+// Fungsi untuk memperbarui teks dengan nama
+async function updateInvitationText() {
+    const name = getNameFromParam();
+    const contentTitle = document.getElementById('content-title');
+    contentTitle.innerText = `Untuk ${name},`;
+    console.log(`Updated invitation text to: Untuk ${name},`);
+}    
+function openInvitation() {
         console.log("Opening invitation...");
         try {
             gsap.to("#card-front", { rotateY: 180, duration: 1, ease: "power2.out", transformOrigin: "left" });
