@@ -294,69 +294,80 @@
     <script>
         console.log("Script loaded, initializing envelope, countdown, and GSAP animations");
 
-// Konfigurasi Google Sheets API
-const API_KEY = 'AIzaSyC0ovjcZs2zSR4B2soLqPLHt2vx6EMhuLY';
-const SPREADSHEET_ID = '1f107L-ccsXLCeyOrGLBxutiDRzYr6SBwpTSHvomlNsw';
-const SHEET_NAME = 'Sheet1';
-const NAME_COLUMN = 'Nama';
+        // Fungsi untuk mendapatkan parameter URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
 
-// Fungsi untuk mendapatkan parameter URL
-function getQueryParam(param) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(param);
-}
+        // Konfigurasi dinamis dari URL
+        const API_KEY = 'AIzaSyC0ovjcZs2zSR4B2soLqPLHt2vx6EMhuLY';
+        let SPREADSHEET_ID = getQueryParam('spreadsheet_id') || '1WZEIOfyc_UcZi1pIi2YESYtksBf5o1BL-SSvarIUCoI'; // Default jika tidak ada parameter
+        let SHEET_NAME = getQueryParam('sheet_name') || '2020'; // Default jika tidak ada parameter
+        const NAME_PARAM = getQueryParam('name') || ''; // Nama dari URL
 
-        // Fungsi untuk mengambil nama dari Google Spreadsheet
-async function fetchNameFromSheet(nameQuery) {
-    try {
-        // Encode SHEET_NAME untuk menghindari masalah dengan spasi
-        const encodedSheetName = encodeURIComponent(SHEET_NAME);
-        const response = await fetch(
-            `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodedSheetName}!A:Z?key=${API_KEY}`
-        );
-        const data = await response.json();
-        if (data.values && data.values.length > 0) {
-            // Cari indeks kolom "Nama Lengkap Alumni"
-            const headers = data.values[0];
-            const nameIndex = headers.indexOf(NAME_COLUMN);
-            if (nameIndex === -1) {
-                console.error(`Kolom "${NAME_COLUMN}" tidak ditemukan`);
-                return null;
+        // Fungsi untuk mengambil data dari Google Spreadsheet
+        async function fetchDataFromSheet() {
+            try {
+                const encodedSheetName = encodeURIComponent(SHEET_NAME);
+                const response = await fetch(
+                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodedSheetName}!A:Z?key=${API_KEY}`
+                );
+                const data = await response.json();
+                if (data.values && data.values.length > 0) {
+                    return data.values;
+                } else {
+                    console.error('Tidak ada data di spreadsheet');
+                    return [];
+                }
+            } catch (error) {
+                console.error('Error mengambil data dari spreadsheet:', error);
+                return [];
             }
-            // Cari baris dengan nama yang cocok
-            for (let i = 1; i < data.values.length; i++) {
-                const row = data.values[i];
-                if (row[nameIndex] && row[nameIndex].toLowerCase() === nameQuery.toLowerCase()) {
-                    return row[nameIndex];
+        }
+
+        // Fungsi untuk mendeteksi kolom nama dan nomor telepon secara dinamis
+        async function detectNameAndPhone(data) {
+            if (!data || data.length === 0) return { name: null, phone: null };
+            const headers = data[0].map(header => header.toLowerCase());
+            let nameIndex = headers.indexOf('nama'); // Default cari 'nama'
+            let phoneIndex = -1;
+
+            // Coba deteksi kolom nomor telepon (misalnya 'no hp', 'no hp/wa', 'phone')
+            const phoneKeywords = ['no hp', 'no hp/wa', 'phone', 'nomor', 'no'];
+            for (let keyword of phoneKeywords) {
+                phoneIndex = headers.indexOf(keyword.toLowerCase());
+                if (phoneIndex !== -1) break;
+            }
+
+            // Jika tidak ditemukan, gunakan kolom pertama untuk nama dan kedua untuk nomor (asumsi umum)
+            if (nameIndex === -1) nameIndex = 0;
+            if (phoneIndex === -1) phoneIndex = 1;
+
+            // Cari nama dari parameter URL
+            let matchedName = null;
+            let matchedPhone = null;
+            if (NAME_PARAM) {
+                for (let i = 1; i < data.length; i++) {
+                    const row = data[i];
+                    if (row[nameIndex] && row[nameIndex].toLowerCase().includes(NAME_PARAM.toLowerCase())) {
+                        matchedName = row[nameIndex];
+                        matchedPhone = row[phoneIndex] || '';
+                        break;
+                    }
                 }
             }
-            console.warn(`Nama "${nameQuery}" tidak ditemukan di spreadsheet`);
-            return null;
-        } else {
-            console.error('Tidak ada data di spreadsheet');
-            return null;
-        }
-    } catch (error) {
-        console.error('Error mengambil data dari spreadsheet:', error);
-        return null;
-    }
-}
-// Fungsi untuk memperbarui teks dengan nama (hanya "Untuk Alumni,")
-async function updateInvitationText() {
-    const nameQuery = getQueryParam('name');
-    let displayName = 'Alumni'; // Default jika nama tidak ditemukan
 
-    if (nameQuery) {
-        const nameFromSheet = await fetchNameFromSheet(nameQuery);
-        if (nameFromSheet) {
-            displayName = nameFromSheet;
+            return { name: matchedName || 'Alumni', phone: matchedPhone || '' };
         }
-    }
 
-    // Perbarui hanya teks "Untuk Alumni," menjadi "Untuk [Nama],"
-    const contentTitle = document.getElementById('content-title');
-    contentTitle.innerText = `Untuk ${displayName},`;
-}
+        // Fungsi untuk memperbarui teks dengan nama
+        async function updateInvitationText() {
+            const data = await fetchDataFromSheet();
+            const { name } = await detectNameAndPhone(data);
+            const contentTitle = document.getElementById('content-title');
+            contentTitle.innerText = `Untuk ${name},`;
+        }
 
     function openInvitation() {
         console.log("Opening invitation...");
