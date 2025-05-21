@@ -292,7 +292,7 @@
             <p class="text-sm md:text-sm mt-1">Copyright by<a href="https://www.linkedin.com/in/ahmad-fairuz-zaki-widyatna-a8a459296/"> Fairuz Zaki</a></p>
     </div>
     <script>
-        console.log("Script loaded, initializing envelope, countdown, and GSAP animations");
+console.log("Script loaded, initializing envelope, countdown, and GSAP animations");
 
         // Fungsi untuk mendapatkan parameter URL
         function getQueryParam(param) {
@@ -302,9 +302,11 @@
 
         // Konfigurasi dinamis dari URL
         const API_KEY = 'AIzaSyC0ovjcZs2zSR4B2soLqPLHt2vx6EMhuLY';
-        let SPREADSHEET_ID = getQueryParam('spreadsheet_id') || '1WZEIOfyc_UcZi1pIi2YESYtksBf5o1BL-SSvarIUCoI'; // Default jika tidak ada parameter
-        let SHEET_NAME = getQueryParam('sheet_name') || '2020'; // Default jika tidak ada parameter
+        let SPREADSHEET_ID = getQueryParam('spreadsheet_id') || '1WZEIOfyc_UcZi1pIi2YESYtksBf5o1BL-SSvarIUCoI'; // Default
+        let SHEET_NAME = getQueryParam('sheet_name') || '2020'; // Default
         const NAME_PARAM = getQueryParam('name') || ''; // Nama dari URL
+        const NAME_COLUMN_PARAM = getQueryParam('name_column') || 'Nama'; // Kolom nama kustom
+        const PHONE_COLUMN_PARAM = getQueryParam('phone_column') || 'No HP/WA'; // Kolom nomor kustom
 
         // Fungsi untuk mengambil data dari Google Spreadsheet
         async function fetchDataFromSheet() {
@@ -328,25 +330,37 @@
 
         // Fungsi untuk mendeteksi kolom nama dan nomor telepon secara dinamis
         async function detectNameAndPhone(data) {
-            if (!data || data.length === 0) return { name: null, phone: null };
-            const headers = data[0].map(header => header.toLowerCase());
-            let nameIndex = headers.indexOf('nama'); // Default cari 'nama'
-            let phoneIndex = -1;
+            if (!data || data.length === 0) return { name: 'Alumni', phone: '' };
+            const headers = data[0].map(header => header ? header.toLowerCase() : '');
+            console.log('Headers detected:', headers);
 
-            // Coba deteksi kolom nomor telepon (misalnya 'no hp', 'no hp/wa', 'phone')
-            const phoneKeywords = ['no hp', 'no hp/wa', 'phone', 'nomor', 'no'];
-            for (let keyword of phoneKeywords) {
-                phoneIndex = headers.indexOf(keyword.toLowerCase());
-                if (phoneIndex !== -1) break;
+            // Tentukan indeks kolom berdasarkan parameter atau deteksi dinamis
+            let nameIndex = headers.indexOf(NAME_COLUMN_PARAM.toLowerCase());
+            let phoneIndex = headers.indexOf(PHONE_COLUMN_PARAM.toLowerCase());
+
+            // Jika tidak ditemukan, coba kata kunci alternatif
+            if (nameIndex === -1) {
+                const nameKeywords = ['nama', 'full name', 'name', 'alumni name'];
+                for (let keyword of nameKeywords) {
+                    nameIndex = headers.indexOf(keyword);
+                    if (nameIndex !== -1) break;
+                }
+            }
+            if (phoneIndex === -1) {
+                const phoneKeywords = ['no hp', 'no hp/wa', 'phone', 'nomor', 'no', 'phone number'];
+                for (let keyword of phoneKeywords) {
+                    phoneIndex = headers.indexOf(keyword);
+                    if (phoneIndex !== -1) break;
+                }
             }
 
-            // Jika tidak ditemukan, gunakan kolom pertama untuk nama dan kedua untuk nomor (asumsi umum)
+            // Fallback ke kolom pertama dan kedua jika tidak ditemukan
             if (nameIndex === -1) nameIndex = 0;
             if (phoneIndex === -1) phoneIndex = 1;
 
             // Cari nama dari parameter URL
-            let matchedName = null;
-            let matchedPhone = null;
+            let matchedName = 'Alumni'; // Default
+            let matchedPhone = '';
             if (NAME_PARAM) {
                 for (let i = 1; i < data.length; i++) {
                     const row = data[i];
@@ -358,7 +372,7 @@
                 }
             }
 
-            return { name: matchedName || 'Alumni', phone: matchedPhone || '' };
+            return { name: matchedName, phone: matchedPhone };
         }
 
         // Fungsi untuk memperbarui teks dengan nama
@@ -367,6 +381,7 @@
             const { name } = await detectNameAndPhone(data);
             const contentTitle = document.getElementById('content-title');
             contentTitle.innerText = `Untuk ${name},`;
+            console.log(`Updated invitation text to: Untuk ${name},`);
         }
 
     function openInvitation() {
