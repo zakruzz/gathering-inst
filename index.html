@@ -306,7 +306,6 @@ console.log("Script loaded, initializing envelope, countdown, and GSAP animation
         let SHEET_NAME = getQueryParam('sheet_name') || '2020'; // Default
         const NAME_PARAM = getQueryParam('name') || ''; // Nama dari URL
         const NAME_COLUMN_PARAM = getQueryParam('name_column') || 'Nama'; // Kolom nama kustom
-        const PHONE_COLUMN_PARAM = getQueryParam('phone_column') || 'No HP/WA'; // Kolom nomor kustom
 
         // Fungsi untuk mengambil data dari Google Spreadsheet
         async function fetchDataFromSheet() {
@@ -328,15 +327,14 @@ console.log("Script loaded, initializing envelope, countdown, and GSAP animation
             }
         }
 
-        // Fungsi untuk mendeteksi kolom nama dan nomor telepon secara dinamis
-        async function detectNameAndPhone(data) {
-            if (!data || data.length === 0) return { name: 'Alumni', phone: '' };
+        // Fungsi untuk mendeteksi nama secara dinamis
+        async function detectName(data) {
+            if (!data || data.length === 0) return 'Alumni';
             const headers = data[0].map(header => header ? header.toLowerCase() : '');
             console.log('Headers detected:', headers);
 
             // Tentukan indeks kolom berdasarkan parameter atau deteksi dinamis
             let nameIndex = headers.indexOf(NAME_COLUMN_PARAM.toLowerCase());
-            let phoneIndex = headers.indexOf(PHONE_COLUMN_PARAM.toLowerCase());
 
             // Jika tidak ditemukan, coba kata kunci alternatif
             if (nameIndex === -1) {
@@ -346,39 +344,29 @@ console.log("Script loaded, initializing envelope, countdown, and GSAP animation
                     if (nameIndex !== -1) break;
                 }
             }
-            if (phoneIndex === -1) {
-                const phoneKeywords = ['no hp', 'no hp/wa', 'phone', 'nomor', 'no', 'phone number'];
-                for (let keyword of phoneKeywords) {
-                    phoneIndex = headers.indexOf(keyword);
-                    if (phoneIndex !== -1) break;
-                }
-            }
 
-            // Fallback ke kolom pertama dan kedua jika tidak ditemukan
+            // Fallback ke kolom pertama jika tidak ditemukan
             if (nameIndex === -1) nameIndex = 0;
-            if (phoneIndex === -1) phoneIndex = 1;
 
             // Cari nama dari parameter URL
             let matchedName = 'Alumni'; // Default
-            let matchedPhone = '';
             if (NAME_PARAM) {
                 for (let i = 1; i < data.length; i++) {
                     const row = data[i];
                     if (row[nameIndex] && row[nameIndex].toLowerCase().includes(NAME_PARAM.toLowerCase())) {
                         matchedName = row[nameIndex];
-                        matchedPhone = row[phoneIndex] || '';
                         break;
                     }
                 }
             }
 
-            return { name: matchedName, phone: matchedPhone };
+            return matchedName;
         }
 
         // Fungsi untuk memperbarui teks dengan nama
         async function updateInvitationText() {
             const data = await fetchDataFromSheet();
-            const { name } = await detectNameAndPhone(data);
+            const name = await detectName(data);
             const contentTitle = document.getElementById('content-title');
             contentTitle.innerText = `Untuk ${name},`;
             console.log(`Updated invitation text to: Untuk ${name},`);
