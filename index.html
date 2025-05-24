@@ -302,8 +302,8 @@ function getQueryParam(param) {
 
 // Konfigurasi dinamis dari URL
 const API_KEY = 'AIzaSyC0ovjcZs2zSR4B2soLqPLHt2vx6EMhuLY';
-let SPREADSHEET_ID = getQueryParam('spreadsheet_id') || '1WZEIOfyc_UcZi1pIi2YESYtksBf5o1BL-SSvarIUCoI'; // Default
-let SHEET_NAME = getQueryParam('sheet_name') || '2020'; // Default
+let SPREADSHEET_ID = getQueryParam('spreadsheet_id') || '1WZEIOfyc_UcZi1pIi2YESYtksBf5o1BL-SSvarIUCoI' || '1a3B9186cGx09saKTCxOvbWqHBjs1HuPBrOC0MKOIYz4'; // Default
+let SHEET_NAME = getQueryParam('sheet_name') || '2020' || 'Form Responses 1'; // Default
 const NAME_PARAM = getQueryParam('name') || 'Alumni'; // Nama dari URL, default 'Alumni'
 
 // Fungsi untuk mengambil data dari Google Spreadsheet
